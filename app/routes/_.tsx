@@ -1,7 +1,10 @@
+import { GlobeIcon, MenuIcon, XIcon } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useLocation, useMatches, useNavigate } from "react-router";
 import { Flag } from "~/components/flag";
+import { Button } from "~/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { useLocalizedHref } from "~/hooks/use-localized-href";
 import { asRouterState, useRouterState } from "~/hooks/use-router-state";
 import { type NamespaceKeys, isSupportedLanguage, languageOptions } from "~/locales/config";
@@ -123,7 +126,9 @@ function DesktopHeader() {
         ))}
       </div>
 
-      <div className={cn("relative flex items-center gap-5")}>{/* <SelectLanguage intent="desktop" /> */}</div>
+      <div className={cn("relative flex items-center gap-5")}>
+        <SelectLanguage intent="desktop" />
+      </div>
     </nav>
   );
 }
@@ -143,7 +148,7 @@ function MobileMenu({ onClick, ariaLabel, icon }: MobileMenuProps) {
         {/* logo */}
       </NavLink>
 
-      <Button onClick={onClick} intent="ghost" size="action" aria-label={ariaLabel}>
+      <Button onClick={onClick} intent="ghost" aria-label={ariaLabel}>
         {icon}
       </Button>
     </div>
@@ -165,7 +170,7 @@ function MobileHeader() {
 
   return (
     <div className={cn("lg:hidden flex w-full")}>
-      <MobileMenu ariaLabel="open menu" onClick={() => setMenuState("open")} icon={<MenuIcon size="md" />} />
+      <MobileMenu ariaLabel="open menu" onClick={() => setMenuState("open")} icon={<MenuIcon />} />
 
       <div
         className={cn(
@@ -174,7 +179,7 @@ function MobileHeader() {
           menuState === "open" ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
       >
-        <MobileMenu ariaLabel="close menu" onClick={() => setMenuState("closed")} icon={<XIcon size="100%" />} />
+        <MobileMenu ariaLabel="close menu" onClick={() => setMenuState("closed")} icon={<XIcon />} />
 
         <div className={cn("flex flex-col w-full overflow-hidden grow")}>
           <div className={cn("flex flex-col justify-center gap-8 border-b-2 border-b-primary-default w-full grow")}>
@@ -214,14 +219,12 @@ export default function MainLayout() {
   return (
     <div className={cn("relative grid grid-rows-[auto_1fr] size-full overflow-hidden")}>
       <header
-        className={cn(
-          "z-10 flex items-center gap-1 bg-background p-6 xl:px-32 lg:py-3 w-full overflow-visible lg:overflow-hidden"
-        )}
+        className={cn("z-10 flex items-center gap-1 bg-background p-6 w-full overflow-visible lg:overflow-hidden")}
       >
         <DesktopHeader />
         <MobileHeader />
       </header>
-      <main className={cn("grid grid-cols-1 px-6 xl:px-32 lg:py-16 size-full overflow-x-hidden")}>
+      <main className={cn("grid grid-cols-1 p-6 size-full overflow-x-hidden")}>
         <Outlet />
       </main>
     </div>

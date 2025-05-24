@@ -27,7 +27,8 @@
       "suspicious": {
         "recommended": true,
         "noExplicitAny": "off",
-        "useAwait": "error"
+        "useAwait": "error",
+        "noArrayIndexKey": "warn"
       },
       "style": {
         "recommended": true,
