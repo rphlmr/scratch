@@ -116,9 +116,14 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 z-1;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  a {
+    @apply focus-visible:inset-ring-[3px] focus-visible:outline-none focus-visible:inset-ring-ring;
   }
 }

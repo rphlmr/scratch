@@ -27,7 +27,7 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "inline-flex flex-1 justify-center items-center gap-1.5 data-[state=active]:bg-background dark:data-[state=active]:bg-input/30 disabled:opacity-50 data-[state=active]:shadow-sm px-2 py-1 border dark:data-[state=active]:border-input border-transparent focus-visible:border-ring rounded-md focus-visible:outline-1 focus-visible:outline-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 h-[calc(100%-1px)] [&_svg:not([class*='size-'])]:size-4 font-medium text-foreground dark:data-[state=active]:text-foreground dark:text-muted-foreground text-sm whitespace-nowrap transition-[color,box-shadow] [&_svg]:pointer-events-none disabled:pointer-events-none [&_svg]:shrink-0",
+        "inline-flex focus-visible:inset-ring-[3px] focus-visible:inset-ring-ring/50 flex-1 justify-center items-center gap-1.5 data-[state=active]:bg-background dark:data-[state=active]:bg-input/30 disabled:opacity-50 data-[state=active]:shadow-sm px-2 py-1 border dark:data-[state=active]:border-input border-transparent focus-visible:border-ring rounded-md focus-visible:outline-1 focus-visible:outline-ring h-[calc(100%-1px)] [&_svg:not([class*='size-'])]:size-4 font-medium text-foreground dark:data-[state=active]:text-foreground dark:text-muted-foreground text-sm whitespace-nowrap transition-[color,box-shadow] [&_svg]:pointer-events-none disabled:pointer-events-none [&_svg]:shrink-0",
         className
       )}
       {...props}
