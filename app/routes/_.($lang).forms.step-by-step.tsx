@@ -1,4 +1,4 @@
-import { useLocalization } from "~/locales/config";
+import { useLocalization } from "~/locales/use-localization";
 
 export function meta() {
   return [{ title: "New React Router App" }, { name: "description", content: "Welcome to React Router!" }];

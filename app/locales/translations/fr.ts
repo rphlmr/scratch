@@ -4,6 +4,7 @@ export default {
       english: "English",
       french: "Français",
     },
+    welcome: "Bienvenue dans mon bac à sable !",
     navigation: {
       forms: {
         title: "Formulaires",

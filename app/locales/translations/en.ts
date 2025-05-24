@@ -6,6 +6,7 @@ export default {
       english: "English",
       french: "Français",
     },
+    welcome: "Welcome to my sandbox!",
     navigation: {
       forms: { title: "Forms", item: { step_by_step: "Step by step", simple: "Simple" } },
     },

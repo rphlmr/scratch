@@ -6,7 +6,7 @@ import { hydrateRoot } from "react-dom/client";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { HydratedRouter } from "react-router/dom";
 import { getInitialNamespaces } from "remix-i18next/client";
-import { defaultLanguage, defaultNS } from "./locales/config";
+import { defaultNS, fallbackLanguage } from "./locales/config";
 
 async function main() {
   await i18next
@@ -14,7 +14,7 @@ async function main() {
     .use(LanguageDetector)
     .use(Fetch)
     .init({
-      fallbackLng: defaultLanguage,
+      fallbackLng: fallbackLanguage,
       ns: getInitialNamespaces(),
       defaultNS,
       detection: { order: ["htmlTag"], caches: [] },

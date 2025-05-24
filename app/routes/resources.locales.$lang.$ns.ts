@@ -1,13 +1,13 @@
 import { cacheHeader } from "pretty-cache-header";
 import { data } from "react-router";
 import { z } from "zod";
-import { type Language, type Namespace, languages, resources } from "~/locales/config";
+import { type Language, type Namespace, resources, supportedLanguages } from "~/locales/config";
 import type { Route } from "./+types/resources.locales.$lang.$ns";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const parsedLang = z
     .string()
-    .refine((lang: any): lang is Language => languages.includes(lang))
+    .refine((lang: any): lang is Language => supportedLanguages.includes(lang))
     .safeParse(params.lang);
 
   if (parsedLang.error) {

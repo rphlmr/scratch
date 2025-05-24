@@ -6,9 +6,9 @@ import { NavLink, Outlet, useNavigate } from "react-router";
 import { Flag } from "~/components/flag";
 import { Button } from "~/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "~/components/ui/select";
-import { useLocalizedHref } from "~/hooks/use-localized-href";
 import { asRouterState } from "~/hooks/use-router-state";
-import { defineNav, isSupportedLanguage, languageOptions, useCurrentRawPath, useLocalization } from "~/locales/config";
+import { type CommonResourceKeys, type CountryCode, type Language, isSupportedLanguage } from "~/locales/config";
+import { useLocalizedHref } from "~/locales/use-localized-href";
 import { cn } from "~/utils/cn";
 
 import { Link } from "react-router";
@@ -45,12 +45,34 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "~/components/ui/sidebar";
+import { useCurrentLocalizedRoutePattern } from "~/locales/use-current-localized-route-pattern";
+import { useLocalization } from "~/locales/use-localization";
+import { createNavigationConfig } from "~/utils/create-navigation-config";
+
+type LanguageOption = {
+  country: CountryCode;
+  value: Language;
+  label: keyof CommonResourceKeys["language"];
+};
+
+export const languageOptions: Array<LanguageOption> = [
+  {
+    value: "fr",
+    label: "french",
+    country: "FR",
+  },
+  {
+    value: "en",
+    label: "english",
+    country: "GB",
+  },
+];
 
 function SelectLanguage() {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation("common", { keyPrefix: "language" });
   const navigate = useNavigate();
   const href = useLocalizedHref();
-  const currentRawPath = useCurrentRawPath();
+  const currentRawPath = useCurrentLocalizedRoutePattern();
   const language = languageOptions
     .map((option) => ({
       ...option,
@@ -92,7 +114,7 @@ function SelectLanguage() {
   );
 }
 
-const nav = defineNav([
+const navigationConfig = createNavigationConfig([
   {
     key: "forms",
     path: "/:lang?/forms",
@@ -110,7 +132,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isMobile } = useSidebar();
   const { t } = useLocalization();
   const href = useLocalizedHref();
-  const currentRawPath = useCurrentRawPath();
+  const currentRawPath = useCurrentLocalizedRoutePattern();
 
   return (
     <Sidebar variant="floating" collapsible="icon" {...props}>
@@ -154,7 +176,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            {nav.map((group) => (
+            {navigationConfig.map((group) => (
               <Collapsible
                 key={group.key}
                 asChild
@@ -197,13 +219,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 export default function MainLayout() {
   const { t } = useLocalization();
   const href = useLocalizedHref();
-  const currentRawPath = useCurrentRawPath();
-  const currentGroup = nav.find((group) => currentRawPath.includes(group.path));
+  const currentRawPath = useCurrentLocalizedRoutePattern();
+  const currentGroup = navigationConfig.find((group) => currentRawPath.includes(group.path));
   const currentGroupItem = currentGroup?.items?.find((item) => item.path === currentRawPath);
-
-  if (!currentGroup) {
-    throw new Error(`No matching navigation group found for path: ${currentRawPath}. This should not happen.`);
-  }
+  const hasBreadcrumb = currentGroup != null && currentGroupItem != null;
 
   return (
     <SidebarProvider
@@ -219,14 +238,17 @@ export default function MainLayout() {
           <SidebarTrigger className="-ml-1" />
           <SelectLanguage />
           <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
+
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink asChild>
-                  <NavLink to={href(currentGroup.path)}>{t(`navigation.${currentGroup.key}.title`)}</NavLink>
+                  <NavLink to={href(currentGroup?.path || "/:lang?")}>
+                    {t(`navigation.${currentGroup?.key}.title`, { defaultValue: t("welcome") })}
+                  </NavLink>
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              {currentGroupItem ? (
+              {hasBreadcrumb ? (
                 <>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>

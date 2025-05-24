@@ -1,4 +1,4 @@
-import { useLocalization } from "~/locales/config";
+import { useLocalization } from "~/locales/use-localization";
 
 export default function View() {
   const { t } = useLocalization();
