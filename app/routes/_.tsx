@@ -242,10 +242,8 @@ export default function MainLayout() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink asChild>
-                  <NavLink to={href(currentGroup?.path || "/:lang?")}>
-                    {t(`navigation.${currentGroup?.key}.title`, { defaultValue: t("welcome") })}
-                  </NavLink>
+                <BreadcrumbLink to={href(currentGroup?.path || "/:lang?")}>
+                  {t(`navigation.${currentGroup?.key}.title`, { defaultValue: t("welcome") })}
                 </BreadcrumbLink>
               </BreadcrumbItem>
               {hasBreadcrumb ? (
