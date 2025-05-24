@@ -4,6 +4,7 @@ import type { FlatNamespace, KeyPrefix } from "i18next";
 import { useMemo } from "react";
 import { type FallbackNs, type UseTranslationOptions, useTranslation } from "react-i18next";
 import type { Country } from "react-phone-number-input";
+import { useLocation, useMatches } from "react-router";
 import en from "~/locales/en";
 import fr from "~/locales/fr";
 
@@ -71,7 +72,7 @@ export function useLocalization<
   );
 }
 
-export const defaultLanguage = "fr" satisfies Language;
+export const defaultLanguage = "en" satisfies Language;
 
 export const ns = Object.keys(fr) as Array<keyof typeof fr>;
 
@@ -108,4 +109,49 @@ export function asLanguage(lang: unknown): Language | undefined {
   if (isSupportedLanguage(lang)) {
     return lang;
   }
+}
+
+type RootNavigationKeys = ResourceKeys["common"]["navigation"];
+
+type SubNavigationKeysOf<RootKey extends keyof RootNavigationKeys> = RootNavigationKeys[RootKey]["item"];
+
+type SubPathOf<RootPath extends RoutePath> = Exclude<Extract<RoutePath, `${RootPath}/${string}`>, RootPath>;
+
+export function defineNav<
+  const RootNavigationKey extends keyof RootNavigationKeys,
+  const RootPath extends RoutePath,
+  const SubRoutePath extends SubPathOf<RootPath>,
+>(
+  nav: Array<{
+    key: RootNavigationKey;
+    path: RootPath;
+    icon: React.ElementType;
+    items: Array<{
+      key: keyof SubNavigationKeysOf<RootNavigationKey>;
+      path: SubRoutePath;
+    }>;
+  }>
+) {
+  return nav;
+}
+
+const LOCALE_SEGMENT = ":lang?";
+
+/**
+ * Get the current raw path, replacing the active language parameter with its route segment
+ *
+ */
+export function useCurrentRawPath() {
+  const location = useLocation();
+  const currentRoute = useMatches().find((match) => match.pathname === location.pathname);
+
+  return useMemo(
+    () =>
+      (currentRoute?.pathname
+        ? currentRoute.params.lang
+          ? currentRoute.pathname.replace(currentRoute.params.lang, LOCALE_SEGMENT)
+          : `/${LOCALE_SEGMENT}${currentRoute.pathname}`
+        : `/${LOCALE_SEGMENT}`) as RoutePath,
+    [currentRoute?.pathname, currentRoute?.params.lang]
+  );
 }

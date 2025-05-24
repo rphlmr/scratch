@@ -4,8 +4,8 @@ import type * as React from "react";
 
 import { cn } from "~/utils/cn";
 
-const buttonVariants = cva(
-  "inline-flex aria-invalid:inset-ring-destructive/20 focus-visible:inset-ring-[3px] focus-visible:inset-ring-ring/50 justify-center items-center gap-2 disabled:opacity-50 aria-invalid:border-destructive focus-visible:border-ring rounded-md outline-none dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 font-medium text-sm whitespace-nowrap transition-all [&_svg]:pointer-events-none disabled:pointer-events-none shrink-0 [&_svg]:shrink-0",
+const button = cva(
+  "inline-flex aria-invalid:inset-ring-destructive/20 focus-visible:inset-ring-[3px] focus-visible:inset-ring-ring/50 justify-center items-center gap-2 disabled:opacity-50 aria-invalid:border-destructive focus-visible:border-ring rounded-md outline-none dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 font-medium text-sm whitespace-nowrap transition-all cursor-pointer [&_svg]:pointer-events-none disabled:pointer-events-none shrink-0 [&_svg]:shrink-0",
   {
     variants: {
       intent: {
@@ -39,12 +39,12 @@ function Button({
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
+  VariantProps<typeof button> & {
     asChild?: boolean;
   }) {
   const Comp = asChild ? Slot : "button";
 
-  return <Comp data-slot="button" className={cn(buttonVariants({ intent, size, className }))} {...props} />;
+  return <Comp data-slot="button" className={cn(button({ intent, size, className }))} {...props} />;
 }
 
-export { Button, buttonVariants };
+export { Button, button };

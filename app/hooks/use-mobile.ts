@@ -1,19 +1,24 @@
-import * as React from "react"
+import * as React from "react";
 
-const MOBILE_BREAKPOINT = 768
+const MOBILE_BREAKPOINT = "(max-width: 768px)"; // lower than md
 
+function subscribe(callback: (event: MediaQueryListEvent) => void) {
+  window.matchMedia(MOBILE_BREAKPOINT).addEventListener("change", callback);
+
+  return () => {
+    window.matchMedia(MOBILE_BREAKPOINT).removeEventListener("change", callback);
+  };
+}
+
+/**
+ * Check if the app should use the mobile app layout
+ *
+ * @returns true if the app is installed as a PWA
+ */
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
-
-  React.useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    }
-    mql.addEventListener("change", onChange)
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    return () => mql.removeEventListener("change", onChange)
-  }, [])
-
-  return !!isMobile
+  return React.useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(MOBILE_BREAKPOINT).matches, // How to get the value on the client
+    () => false // How to get the value on the server
+  );
 }

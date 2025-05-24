@@ -1,49 +1,56 @@
-import { GlobeIcon, MenuIcon, XIcon } from "lucide-react";
-import React from "react";
+import { ChevronRight, GlobeIcon, TypeOutlineIcon } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
+import type React from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet, useLocation, useMatches, useNavigate } from "react-router";
+import { NavLink, Outlet, useNavigate } from "react-router";
 import { Flag } from "~/components/flag";
 import { Button } from "~/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "~/components/ui/select";
 import { useLocalizedHref } from "~/hooks/use-localized-href";
-import { asRouterState, useRouterState } from "~/hooks/use-router-state";
-import { type NamespaceKeys, isSupportedLanguage, languageOptions } from "~/locales/config";
+import { asRouterState } from "~/hooks/use-router-state";
+import { defineNav, isSupportedLanguage, languageOptions, useCurrentRawPath, useLocalization } from "~/locales/config";
 import { cn } from "~/utils/cn";
 
-type NavigationPaths = Array<{
-  label: NamespaceKeys<"common">;
-  path: RoutePath;
-  rightIcon?: React.ReactNode;
-}>;
+import { Link } from "react-router";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "~/components/ui/breadcrumb";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { Separator } from "~/components/ui/separator";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarTrigger,
+  useSidebar,
+} from "~/components/ui/sidebar";
 
-const navigationPaths: NavigationPaths = [
-  {
-    label: "navigation.home",
-    path: "/:lang?",
-  },
-  {
-    label: "navigation.wizard_form",
-    path: "/:lang?/wizard-form",
-  },
-];
-
-const navigationPathsMobile: NavigationPaths = [...navigationPaths];
-
-type SelectLanguageProps = {
-  intent?: "desktop" | "mobile";
-};
-
-function SelectLanguage({ intent = "desktop" }: SelectLanguageProps) {
+function SelectLanguage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const href = useLocalizedHref();
-  const location = useLocation();
-  const currentRoute = useMatches().find((match) => match.pathname === location.pathname);
-  const rawPath = currentRoute
-    ? currentRoute.params.lang
-      ? currentRoute.pathname.replace(currentRoute.params.lang, ":lang?")
-      : `/:lang?${currentRoute.pathname}`
-    : "/:lang?";
+  const currentRawPath = useCurrentRawPath();
   const language = languageOptions
     .map((option) => ({
       ...option,
@@ -57,7 +64,7 @@ function SelectLanguage({ intent = "desktop" }: SelectLanguageProps) {
       onValueChange={(lang) => {
         if (isSupportedLanguage(lang)) {
           i18n.changeLanguage(lang);
-          navigate(href(rawPath as RoutePath, { lang }), {
+          navigate(href(currentRawPath, { lang }), {
             replace: true,
             preventScrollReset: true,
             state: asRouterState({ menu: "locked" }),
@@ -65,18 +72,11 @@ function SelectLanguage({ intent = "desktop" }: SelectLanguageProps) {
         }
       }}
     >
-      {intent === "desktop" && (
-        <SelectTrigger asChild>
-          <Button intent="secondary" size="icon" aria-label="switch language">
-            <GlobeIcon />
-          </Button>
-        </SelectTrigger>
-      )}
-      {intent === "mobile" && (
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-      )}
+      <SelectTrigger asChild>
+        <Button intent="ghost" size="icon" className="size-7" aria-label="switch language">
+          <GlobeIcon />
+        </Button>
+      </SelectTrigger>
 
       <SelectContent side="bottom" align="center">
         {language.map((option) => (
@@ -92,141 +92,155 @@ function SelectLanguage({ intent = "desktop" }: SelectLanguageProps) {
   );
 }
 
-function DesktopHeader() {
-  const { t } = useTranslation();
+const nav = defineNav([
+  {
+    key: "forms",
+    path: "/:lang?/forms",
+    icon: TypeOutlineIcon,
+    items: [
+      {
+        key: "step_by_step",
+        path: "/:lang?/forms/step-by-step",
+      },
+    ],
+  },
+]);
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { isMobile } = useSidebar();
+  const { t } = useLocalization();
   const href = useLocalizedHref();
+  const currentRawPath = useCurrentRawPath();
 
   return (
-    <nav className={cn("hidden lg:flex items-center gap-2 w-full overflow-hidden")}>
-      <NavLink
-        to={href("/:lang?")}
-        className={cn("w-fit", "focus-visible:inset-ring-2 focus-visible:outline-none focus-visible:inset-ring-ring")}
-      >
-        {/* logo */}
-      </NavLink>
-
-      <div className={cn("flex justify-center items-center overflow-hidden grow")}>
-        {navigationPaths.map((item) => (
-          <NavLink
-            key={item.label}
-            to={href(item.path)}
-            end
-            className={({ isActive }) =>
-              cn(
-                "inline-flex items-center gap-1 p-3 border-b-2 w-fit h-12.5 overflow-hidden font-lexend text-lg text-center leading-[1.2]",
-                isActive
-                  ? "border-primary-pressed text-primary-pressed"
-                  : "border-transparent text-primary hover:text-primary-hover"
-              )
-            }
-          >
-            <span className={cn("truncate")}>{t(item.label)}</span>
-            {item.rightIcon}
-          </NavLink>
-        ))}
-      </div>
-
-      <div className={cn("relative flex items-center gap-5")}>
-        <SelectLanguage intent="desktop" />
-      </div>
-    </nav>
-  );
-}
-
-type MobileMenuProps = {
-  onClick: () => void;
-  ariaLabel: string;
-  icon: React.ReactNode;
-};
-
-function MobileMenu({ onClick, ariaLabel, icon }: MobileMenuProps) {
-  const href = useLocalizedHref();
-
-  return (
-    <div className={cn("flex justify-between items-center w-full h-fit overflow-hidden")}>
-      <NavLink to={href("/:lang?")} className={cn("w-fit")}>
-        {/* logo */}
-      </NavLink>
-
-      <Button onClick={onClick} intent="ghost" aria-label={ariaLabel}>
-        {icon}
-      </Button>
-    </div>
-  );
-}
-
-function MobileHeader() {
-  const { t } = useTranslation();
-  const [menuState, setMenuState] = React.useState<"open" | "closed">("closed");
-  const location = useLocation();
-  const routerState = useRouterState();
-  const href = useLocalizedHref();
-
-  React.useEffect(() => {
-    if (menuState === "open" && routerState.menu === "unlocked") {
-      setMenuState("closed");
-    }
-  }, [location.pathname, routerState.menu]);
-
-  return (
-    <div className={cn("lg:hidden flex w-full")}>
-      <MobileMenu ariaLabel="open menu" onClick={() => setMenuState("open")} icon={<MenuIcon />} />
-
-      <div
-        className={cn(
-          "z-50 absolute inset-0 flex flex-col items-center gap-1 bg-background p-6 w-full h-full overflow-hidden",
-          "transition-all duration-300 ease-in-out",
-          menuState === "open" ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        )}
-      >
-        <MobileMenu ariaLabel="close menu" onClick={() => setMenuState("closed")} icon={<XIcon />} />
-
-        <div className={cn("flex flex-col w-full overflow-hidden grow")}>
-          <div className={cn("flex flex-col justify-center gap-8 border-b-2 border-b-primary-default w-full grow")}>
-            <span className={cn("font-lexend font-extrabold text-primary text-3xl")}>Menu</span>
-            <nav className={cn("flex flex-col gap-3")}>
-              {navigationPathsMobile.map((item) => (
-                <NavLink
-                  key={item.label}
-                  to={href(item.path)}
-                  state={asRouterState({ menu: "unlocked" })}
-                  end
-                  className={({ isActive }) =>
-                    cn(
-                      "inline-flex relative items-center gap-1 px-1 py-3 w-fit font-lexend text-2xl text-center",
-                      isActive
-                        ? "font-semibold text-primary-pressed after:content-[''] after:w-20 after:h-1 after:bg-primary-pressed after:absolute after:bottom-0 after:left-1 after:rounded-full"
-                        : "text-primary hover:text-primary-hover"
-                    )
-                  }
-                >
-                  <span className={cn("truncate")}>{t(item.label)}</span>
-                  {item.rightIcon}
-                </NavLink>
-              ))}
-            </nav>
-          </div>
-          <div className={cn("pt-6")}>
-            <SelectLanguage intent="mobile" />
-          </div>
-        </div>
-      </div>
-    </div>
+    <Sidebar variant="floating" collapsible="icon" {...props}>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton size="lg">
+                  <img
+                    src="https://avatars.githubusercontent.com/u/20722140?s=400&u=274a794dbb372ee5ce672a58b55e7248ef0f2c9b&v=4"
+                    className="flex justify-center items-center bg-sidebar-primary rounded-lg size-8 aspect-square text-sidebar-primary-foreground"
+                    alt="@rphlmr"
+                  />
+                  <div className="flex flex-col gap-0.5 leading-none">
+                    <span className="font-medium">@rphlmr's scratchpad</span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="rounded-lg w-[--radix-dropdown-menu-trigger-width] min-w-56"
+                align="start"
+                side={isMobile ? "bottom" : "right"}
+                sideOffset={4}
+              >
+                <DropdownMenuItem asChild>
+                  <Link to="https://github.com/rphlmr/scratch" target="_blank">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <title>GitHub</title>
+                      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                    </svg>
+                    <span className="ml-2">{t("action.view_on_github")}</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarMenu>
+            {nav.map((group) => (
+              <Collapsible
+                key={group.key}
+                asChild
+                defaultOpen={currentRawPath.includes(group.path)}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip={t(`navigation.${group.key}.title`)}
+                      isActive={group.path === currentRawPath}
+                    >
+                      {group.icon && <group.icon />}
+                      <span>{t(`navigation.${group.key}.title`)}</span>
+                      <ChevronRight className="ml-auto group-data-[state=open]/collapsible:rotate-90 transition-transform duration-200" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {group.items?.map((item) => (
+                        <SidebarMenuSubItem key={item.key}>
+                          <SidebarMenuSubButton asChild isActive={item.path === currentRawPath}>
+                            <NavLink to={href(item.path)}>{t(`navigation.${group.key}.item.${item.key}`)}</NavLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarRail />
+    </Sidebar>
   );
 }
 
 export default function MainLayout() {
+  const { t } = useLocalization();
+  const href = useLocalizedHref();
+  const currentRawPath = useCurrentRawPath();
+  const currentGroup = nav.find((group) => currentRawPath.includes(group.path));
+  const currentGroupItem = currentGroup?.items?.find((item) => item.path === currentRawPath);
+
+  if (!currentGroup) {
+    throw new Error(`No matching navigation group found for path: ${currentRawPath}. This should not happen.`);
+  }
+
   return (
-    <div className={cn("relative grid grid-rows-[auto_1fr] size-full overflow-hidden")}>
-      <header
-        className={cn("z-10 flex items-center gap-1 bg-background p-6 w-full overflow-visible lg:overflow-hidden")}
-      >
-        <DesktopHeader />
-        <MobileHeader />
-      </header>
-      <main className={cn("grid grid-cols-1 p-6 size-full overflow-x-hidden")}>
-        <Outlet />
-      </main>
-    </div>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "19rem",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex items-center gap-2 px-4 h-16 shrink-0">
+          <SidebarTrigger className="-ml-1" />
+          <SelectLanguage />
+          <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink asChild>
+                  <NavLink to={href(currentGroup.path)}>{t(`navigation.${currentGroup.key}.title`)}</NavLink>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {currentGroupItem ? (
+                <>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{t(`navigation.${currentGroup.key}.item.${currentGroupItem.key}`)}</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </>
+              ) : null}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </header>
+        <main className="flex flex-col flex-1 gap-4 p-4 pt-0">
+          <Outlet />
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

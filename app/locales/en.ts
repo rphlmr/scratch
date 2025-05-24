@@ -7,12 +7,12 @@ export default {
       french: "Français",
     },
     navigation: {
-      home: "Home",
-      wizard_form: "Step-by-step Form",
+      forms: { title: "Forms", item: { step_by_step: "Step by step", simple: "Simple" } },
     },
     action: {
       next: "Next",
       previous: "Previous",
+      view_on_github: "View on GitHub",
     },
     form: {
       error: {
