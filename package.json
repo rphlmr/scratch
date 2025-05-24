@@ -9,14 +9,26 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@react-router/fs-routes": "^7.6.0",
     "@react-router/node": "^7.5.3",
     "@react-router/serve": "^7.5.3",
+    "class-variance-authority": "^0.7.1",
+    "date-fns": "^4.1.0",
+    "i18next": "^25.2.0",
+    "i18next-browser-languagedetector": "^8.1.0",
+    "i18next-fetch-backend": "^6.0.0",
     "isbot": "^5.1.27",
+    "pretty-cache-header": "^1.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router": "^7.5.3"
+    "react-i18next": "^15.5.2",
+    "react-phone-number-input": "^3.4.12",
+    "react-router": "^7.5.3",
+    "remix-i18next": "^7.2.1",
+    "zod": "^3.25.28"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@react-router/dev": "^7.5.3",
     "@tailwindcss/vite": "^4.1.4",
     "@types/node": "^20",
@@ -26,5 +38,6 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.3",
     "vite-tsconfig-paths": "^5.1.4"
-  }
+  },
+  "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f"
 }

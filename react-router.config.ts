@@ -1,7 +1,14 @@
 import type { Config } from "@react-router/dev/config";
+import type { href } from "react-router";
+
+declare global {
+  export type RoutePath = Parameters<typeof href>[0];
+}
 
 export default {
-  // Config options...
-  // Server-side render by default, to enable SPA mode set this to `false`
   ssr: true,
+  prerender: ["/"],
+  future: {
+    unstable_middleware: true,
+  },
 } satisfies Config;

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "files": {
+    "ignore": ["dist", ".react-router/types"]
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "defaultBranch": "main",
+    "useIgnoreFile": true
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "lineEnding": "lf",
+    "lineWidth": 120
+  },
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "ignore": ["package.json"],
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "recommended": true,
+        "noExplicitAny": "off",
+        "useAwait": "error"
+      },
+      "style": {
+        "recommended": true,
+        "noParameterAssign": "info",
+        "noUnusedTemplateLiteral": "warn",
+        "noNonNullAssertion": "warn"
+      },
+      "complexity": {
+        "recommended": true,
+        "noForEach": "warn",
+        "useLiteralKeys": "warn",
+        "noUselessCatch": "warn"
+      },
+      "security": {
+        "recommended": true,
+        "noDangerouslySetInnerHtml": "off"
+      },
+      "performance": {
+        "recommended": true
+      },
+      "correctness": {
+        "recommended": true,
+        "noUnusedImports": "warn",
+        "useExhaustiveDependencies": "warn"
+      },
+      "a11y": {
+        "recommended": true
+      },
+      "nursery": {
+        "recommended": true
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "always",
+      "trailingCommas": "es5"
+    }
+  }
+}
