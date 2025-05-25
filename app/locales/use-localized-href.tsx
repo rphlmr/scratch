@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import React from "react";
 import { href, useParams } from "react-router";
 import { asLanguage } from "~/locales/config";
 
@@ -13,6 +13,5 @@ export function useLocalizedHref(): LocalizedHrefFn {
   const params = useParams();
   const lang = params.lang;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: wrong assumption
-  return useCallback(localizedHref(lang), [lang]);
+  return React.useMemo(() => localizedHref(lang), [lang]);
 }

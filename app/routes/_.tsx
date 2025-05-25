@@ -6,7 +6,6 @@ import { NavLink, Outlet, useNavigate } from "react-router";
 import { Flag } from "~/components/flag";
 import { Button } from "~/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "~/components/ui/select";
-import { asRouterState } from "~/hooks/use-router-state";
 import { type CommonResourceKeys, type CountryCode, type Language, isSupportedLanguage } from "~/locales/config";
 import { useLocalizedHref } from "~/locales/use-localized-href";
 import { cn } from "~/utils/cn";
@@ -45,7 +44,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "~/components/ui/sidebar";
-import { useCurrentLocalizedRoutePattern } from "~/locales/use-current-localized-route-pattern";
+import { useCurrentLocalizedPathPattern } from "~/locales/use-current-localized-route-pattern";
 import { useLocalization } from "~/locales/use-localization";
 import { createNavigationConfig } from "~/utils/create-navigation-config";
 
@@ -72,7 +71,7 @@ function SelectLanguage() {
   const { t, i18n } = useTranslation("common", { keyPrefix: "language" });
   const navigate = useNavigate();
   const href = useLocalizedHref();
-  const currentRawPath = useCurrentLocalizedRoutePattern();
+  const currentRawPath = useCurrentLocalizedPathPattern();
   const language = languageOptions
     .map((option) => ({
       ...option,
@@ -89,7 +88,6 @@ function SelectLanguage() {
           navigate(href(currentRawPath, { lang }), {
             replace: true,
             preventScrollReset: true,
-            state: asRouterState({ menu: "locked" }),
           });
         }
       }}
@@ -132,7 +130,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isMobile } = useSidebar();
   const { t } = useLocalization();
   const href = useLocalizedHref();
-  const currentRawPath = useCurrentLocalizedRoutePattern();
+  const currentRawPath = useCurrentLocalizedPathPattern();
 
   return (
     <Sidebar variant="floating" collapsible="icon" {...props}>
@@ -219,9 +217,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 export default function MainLayout() {
   const { t } = useLocalization();
   const href = useLocalizedHref();
-  const currentRawPath = useCurrentLocalizedRoutePattern();
-  const currentGroup = navigationConfig.find((group) => currentRawPath.includes(group.path));
-  const currentGroupItem = currentGroup?.items?.find((item) => item.path === currentRawPath);
+  const currentPathPattern = useCurrentLocalizedPathPattern();
+  const currentGroup = navigationConfig.find((group) => currentPathPattern.includes(group.path));
+  const currentGroupItem = currentGroup?.items?.find((item) => item.path === currentPathPattern);
   const hasBreadcrumb = currentGroup != null && currentGroupItem != null;
 
   return (

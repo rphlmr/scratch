@@ -16,21 +16,17 @@ export function useLocalization<
 >(ns?: Ns, options?: UseTranslationOptions<KPrefix>) {
   const { t, i18n } = useTranslation(ns, options);
   const language = i18n.language;
-  const dateFns = React.useMemo(() => dateFnsMap[language], [language]);
-  const locale = React.useMemo(
-    () => ({
-      dateFns,
-      formatDate: (date: Date) => format(date, "PPP", { locale: dateFns }),
-    }),
-    [dateFns]
-  );
 
-  return React.useMemo(
-    () => ({
+  return React.useMemo(() => {
+    const dateFns = dateFnsMap[language];
+
+    return {
       t,
       language,
-      locale,
-    }),
-    [language, locale, t]
-  );
+      locale: {
+        dateFns,
+        formatDate: (date: Date) => format(date, "PPP", { locale: dateFns }),
+      },
+    };
+  }, [language, t]);
 }

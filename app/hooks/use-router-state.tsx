@@ -5,15 +5,11 @@ type RouterState = Partial<{
 }>;
 
 export function useRouterState(): RouterState {
-  const location = useLocation();
+  const { state } = useLocation();
 
-  return {
-    ...location.state,
-  };
+  return Object.assign({}, state);
 }
 
 export function asRouterState(state: RouterState): RouterState {
-  return {
-    ...state,
-  };
+  return Object.assign({}, state);
 }
