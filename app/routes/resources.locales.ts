@@ -2,7 +2,7 @@ import { cacheHeader } from "pretty-cache-header";
 import { data } from "react-router";
 import { z } from "zod";
 import { type Language, type Namespace, resources, supportedLanguages } from "~/locales/config";
-import type { Route } from "./+types/resources.locales.$lang.$ns";
+import type { Route } from "./resources/+types/locales";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const parsedLang = z

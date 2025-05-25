@@ -10,7 +10,6 @@ export default {
         title: "Formulaires",
         item: {
           step_by_step: "Étape par étape",
-          simple: "Simple",
         },
       },
     },

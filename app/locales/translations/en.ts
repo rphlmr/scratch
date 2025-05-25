@@ -8,7 +8,7 @@ export default {
     },
     welcome: "Welcome to my sandbox!",
     navigation: {
-      forms: { title: "Forms", item: { step_by_step: "Step by step", simple: "Simple" } },
+      forms: { title: "Forms", item: { step_by_step: "Step by step" } },
     },
     action: {
       next: "Next",
