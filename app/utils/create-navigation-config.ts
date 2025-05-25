@@ -1,4 +1,4 @@
-import type { CommonResourceKeys, Language } from "~/locales/config";
+import type { CommonResourceKeys } from "~/locales/config";
 
 type RootNavigationKeys = CommonResourceKeys["navigation"];
 
@@ -13,7 +13,7 @@ export function createNavigationItem<
   const Items extends Array<ReturnType<typeof createNavigationItem<RootNavigationKey, Path>>> = any,
 >(item: {
   key: keyof SubNavigationKeysOf<RootNavigationKey>;
-  path: Record<Language, Path>;
+  path: Path;
   items?: Items;
 }) {
   return item;
@@ -25,7 +25,7 @@ export function createNavigationSection<
   const Items extends Array<ReturnType<typeof createNavigationItem<RootNavigationKey, Path>>>,
 >(section: {
   key: RootNavigationKey;
-  path: Record<Language, Path>;
+  path: Path;
   icon: React.ElementType;
   items: Items;
 }) {
