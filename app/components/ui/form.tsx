@@ -10,8 +10,10 @@ import {
   useFormContext,
   useFormState,
 } from "react-hook-form";
+import type { UseTranslationResponse } from "react-i18next";
 
 import { Label } from "~/components/ui/label";
+import type { Namespace } from "~/locales/config";
 import { cn } from "~/utils/cn";
 
 const Form = FormProvider;
@@ -118,19 +120,35 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
+type FormMessageProps = React.HTMLAttributes<HTMLParagraphElement> & {
+  t: UseTranslationResponse<Namespace, unknown>["t"];
+};
+
+const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(function FormMessage(
+  { className, children, t, ...props },
+  ref
+) {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message ?? "") : props.children;
+  let body = error ? String(error?.message ?? "") : children;
 
   if (!body) {
     return null;
   }
 
+  if (typeof body === "string") {
+    body = t(body, { defaultValue: t("common:form.error.field_required") });
+  }
+
   return (
-    <p data-slot="form-message" id={formMessageId} className={cn("text-destructive text-sm", className)} {...props}>
+    <p
+      ref={ref}
+      id={formMessageId}
+      className={cn("font-medium text-[0.8rem] text-destructive-foreground", className)}
+      {...props}
+    >
       {body}
     </p>
   );
-}
+});
 
 export { useFormField, Form, FormItem, FormLabel, FormControl, FormDescription, FormMessage, FormField };

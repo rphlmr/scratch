@@ -7,7 +7,7 @@ import { Flag } from "~/components/flag";
 import { Button } from "~/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "~/components/ui/select";
 import { type CommonResourceKeys, type CountryCode, type Language, isSupportedLanguage } from "~/locales/config";
-import { useLocalizedHref } from "~/locales/use-localized-href";
+import { useCurrentLocalizedPathPattern, useLocalizedHref } from "~/locales/use-localized-href";
 import { cn } from "~/utils/cn";
 
 import { Link } from "react-router";
@@ -44,25 +44,18 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "~/components/ui/sidebar";
-import { useCurrentLocalizedPathPattern } from "~/locales/use-current-localized-route-pattern";
 import { useLocalization } from "~/locales/use-localization";
 import { createNavigationItem, createNavigationSection } from "~/utils/create-navigation-config";
 
 const navigationConfig = [
   createNavigationSection({
     key: "forms",
-    path: {
-      en: "/:lang?/forms",
-      fr: "/:lang?/formulaires",
-    },
+    path: "/:lang/forms",
     icon: TypeOutlineIcon,
     items: [
       createNavigationItem({
         key: "step_by_step",
-        path: {
-          en: "/:lang?/forms/step-by-step",
-          fr: "/:lang?/formulaires/pas-a-pas",
-        },
+        path: "/:lang/forms/step-by-step",
       }),
     ],
   }),
@@ -92,8 +85,6 @@ function SelectLanguage() {
   const navigate = useNavigate();
   const href = useLocalizedHref();
   const currentPathPattern = useCurrentLocalizedPathPattern();
-  const currentSection = navigationConfig.find((section) => currentPathPattern.includes(section.path[i18n.language]));
-  const currentSectionItem = currentSection?.items?.find((item) => item.path[i18n.language] === currentPathPattern);
   const language = languageOptions
     .map((option) => ({
       ...option,
@@ -107,13 +98,7 @@ function SelectLanguage() {
       onValueChange={(lang) => {
         if (isSupportedLanguage(lang)) {
           i18n.changeLanguage(lang);
-          const localizedSection = navigationConfig.find((section) => section.key === currentSection?.key);
-          const localizedSectionItem = localizedSection?.items.find((item) => item.key === currentSectionItem?.key);
-          const localizedPath = localizedSectionItem
-            ? localizedSectionItem.path[lang]
-            : localizedSection?.path[lang] || "/:lang?";
-
-          navigate(href(localizedPath, { lang }), {
+          navigate(href(currentPathPattern, { lang }), {
             replace: true,
             preventScrollReset: true,
           });
@@ -143,8 +128,8 @@ function SelectLanguage() {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isMobile } = useSidebar();
   const { t, language } = useLocalization();
-  const href = useLocalizedHref();
   const currentRawPath = useCurrentLocalizedPathPattern();
+  const href = useLocalizedHref();
 
   return (
     <Sidebar variant="floating" collapsible="icon" {...props}>
@@ -192,14 +177,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <Collapsible
                 key={group.key}
                 asChild
-                defaultOpen={currentRawPath.includes(group.path[language])}
+                defaultOpen={currentRawPath.includes(group.path)}
                 className="group/collapsible"
               >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                       tooltip={t(`navigation.${group.key}.title`)}
-                      isActive={group.path[language] === currentRawPath}
+                      isActive={group.path === currentRawPath}
                     >
                       {group.icon && <group.icon />}
                       <span>{t(`navigation.${group.key}.title`)}</span>
@@ -210,10 +195,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuSub>
                       {group.items?.map((item) => (
                         <SidebarMenuSubItem key={item.key}>
-                          <SidebarMenuSubButton asChild isActive={item.path[language] === currentRawPath}>
-                            <NavLink to={href(item.path[language])}>
-                              {t(`navigation.${group.key}.item.${item.key}`)}
-                            </NavLink>
+                          <SidebarMenuSubButton asChild isActive={item.path === currentRawPath}>
+                            <NavLink to={href(item.path)}>{t(`navigation.${group.key}.item.${item.key}`)}</NavLink>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
@@ -234,8 +217,8 @@ export default function AppLayout() {
   const { t, language } = useLocalization();
   const href = useLocalizedHref();
   const currentPathPattern = useCurrentLocalizedPathPattern();
-  const currentGroup = navigationConfig.find((group) => currentPathPattern.includes(group.path[language]));
-  const currentGroupItem = currentGroup?.items?.find((item) => item.path[language] === currentPathPattern);
+  const currentGroup = navigationConfig.find((group) => currentPathPattern.includes(group.path));
+  const currentGroupItem = currentGroup?.items?.find((item) => item.path === currentPathPattern);
   const hasBreadcrumb = currentGroup != null && currentGroupItem != null;
 
   return (
@@ -256,7 +239,7 @@ export default function AppLayout() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink to={href(currentGroup?.path[language] || "/:lang?")}>
+                <BreadcrumbLink to={href(currentGroup?.path || "/:lang")}>
                   {t(`navigation.${currentGroup?.key}.title`, { defaultValue: t("welcome") })}
                 </BreadcrumbLink>
               </BreadcrumbItem>
