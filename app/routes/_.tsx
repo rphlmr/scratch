@@ -7,7 +7,7 @@ import { Flag } from "~/components/flag";
 import { Button } from "~/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "~/components/ui/select";
 import { type CommonResourceKeys, type CountryCode, type Language, isSupportedLanguage } from "~/locales/config";
-import { useLocalizedHref } from "~/locales/use-localized-href";
+import { useCurrentLocalizedPathPattern, useLocalizedHref } from "~/locales/use-localized-href";
 import { cn } from "~/utils/cn";
 
 import { Link } from "react-router";
@@ -44,19 +44,18 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "~/components/ui/sidebar";
-import { useCurrentLocalizedPathPattern } from "~/locales/use-current-localized-route-pattern";
 import { useLocalization } from "~/locales/use-localization";
 import { createNavigationItem, createNavigationSection } from "~/utils/create-navigation-config";
 
 const navigationConfig = [
   createNavigationSection({
     key: "forms",
-    path: "/:lang?/forms",
+    path: "/:lang/forms",
     icon: TypeOutlineIcon,
     items: [
       createNavigationItem({
         key: "step_by_step",
-        path: "/:lang?/forms/step-by-step",
+        path: "/:lang/forms/step-by-step",
       }),
     ],
   }),
@@ -129,8 +128,8 @@ function SelectLanguage() {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isMobile } = useSidebar();
   const { t, language } = useLocalization();
-  const href = useLocalizedHref();
   const currentRawPath = useCurrentLocalizedPathPattern();
+  const href = useLocalizedHref();
 
   return (
     <Sidebar variant="floating" collapsible="icon" {...props}>
@@ -240,7 +239,7 @@ export default function AppLayout() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink to={href(currentGroup?.path || "/:lang?")}>
+                <BreadcrumbLink to={href(currentGroup?.path || "/:lang")}>
                   {t(`navigation.${currentGroup?.key}.title`, { defaultValue: t("welcome") })}
                 </BreadcrumbLink>
               </BreadcrumbItem>
