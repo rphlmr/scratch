@@ -1,7 +1,8 @@
 import { cacheHeader } from "pretty-cache-header";
 import { data } from "react-router";
 import { z } from "zod";
-import { type Language, type Namespace, resources, supportedLanguages } from "~/locales/config";
+
+import { type FlatNamespace, type Language, resources, supportedLanguages } from "~/locales/config";
 import type { Route } from "./+types/resources.locales.$lang.$ns";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -20,7 +21,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   const parsedNs = z
     .string()
-    .refine((ns): ns is Namespace => {
+    .refine((ns): ns is FlatNamespace => {
       return Object.keys(resources[lang]).includes(ns);
     })
     .safeParse(params.ns);
@@ -28,8 +29,6 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (parsedNs.error) {
     return data({ error: parsedNs.error }, { status: 400 });
   }
-
-  const ns = parsedNs.data;
 
   const headers = new Headers();
 
@@ -48,5 +47,5 @@ export async function loader({ params }: Route.LoaderArgs) {
     );
   }
 
-  return data(namespaces[ns], { headers });
+  return data(namespaces[parsedNs.data], { headers });
 }

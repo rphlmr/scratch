@@ -1,4 +1,6 @@
+import type { FlatNamespace as I18nFlatNamespace, Namespace as I18nNamespace } from "i18next";
 import type { Country } from "react-phone-number-input";
+
 import en from "~/locales/translations/en";
 import fr from "~/locales/translations/fr";
 
@@ -13,6 +15,10 @@ declare module "i18next" {
   }
 }
 
+export type Namespace = I18nNamespace;
+
+export type FlatNamespace = I18nFlatNamespace;
+
 export type CountryCode = Country;
 
 export const supportedLanguages = ["en", "fr"] as const;
@@ -21,9 +27,7 @@ export type Language = (typeof supportedLanguages)[number];
 
 export const fallbackLanguage = "en" satisfies Language;
 
-export const ns = Object.keys(fr) as Array<keyof typeof fr>;
-
-export type Namespace = (typeof ns)[number];
+export const ns = Object.keys(fr) as ReadonlyArray<keyof typeof fr>;
 
 export const defaultNS = "common" satisfies Namespace;
 
