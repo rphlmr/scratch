@@ -1,8 +1,18 @@
 import React from "react";
 import { href, useLocation, useMatches, useParams } from "react-router";
-import { asLanguage } from "~/locales/config";
+import { type Language, asLanguage } from "~/locales/config";
 
 export const LANG_PARAM_SEGMENT = "/:lang";
+
+export function localizedPathPattern(pathname?: string, lang?: Language | string): RoutePath {
+  return (
+    pathname
+      ? lang
+        ? pathname.replace(lang, LANG_PARAM_SEGMENT.replace("/", ""))
+        : `${LANG_PARAM_SEGMENT}${pathname}`
+      : `${LANG_PARAM_SEGMENT}`
+  ) as RoutePath;
+}
 
 /**
  * Returns the current route path pattern, replacing the active **localized language segment** in the pathname
@@ -18,13 +28,7 @@ export function useCurrentLocalizedPathPattern(): RoutePath {
   const location = useLocation();
   const currentRoute = useMatches().find((match) => match.pathname === location.pathname);
 
-  return (
-    currentRoute?.pathname
-      ? currentRoute.params.lang
-        ? currentRoute.pathname.replace(currentRoute.params.lang, LANG_PARAM_SEGMENT.replace("/", ""))
-        : `${LANG_PARAM_SEGMENT}${currentRoute.pathname}`
-      : `${LANG_PARAM_SEGMENT}`
-  ) as RoutePath;
+  return localizedPathPattern(currentRoute?.pathname, currentRoute?.params.lang);
 }
 
 type LocalizedHrefFn = (...args: Parameters<typeof href>) => ReturnType<typeof href>;
