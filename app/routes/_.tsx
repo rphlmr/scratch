@@ -50,12 +50,12 @@ import { createNavigationItem, createNavigationSection } from "~/utils/create-na
 const navigationConfig = [
   createNavigationSection({
     key: "forms",
-    path: "/:lang/forms",
+    path: "/:lang?/forms",
     icon: TypeOutlineIcon,
     items: [
       createNavigationItem({
         key: "step_by_step",
-        path: "/:lang/forms/step-by-step",
+        path: "/:lang?/forms/step-by-step",
       }),
     ],
   }),
@@ -239,7 +239,7 @@ export default function AppLayout() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink to={href(currentGroup?.path || "/:lang")}>
+                <BreadcrumbLink to={href(currentGroup?.path || "/:lang?")}>
                   {t(`navigation.${currentGroup?.key}.title`, { defaultValue: t("welcome") })}
                 </BreadcrumbLink>
               </BreadcrumbItem>

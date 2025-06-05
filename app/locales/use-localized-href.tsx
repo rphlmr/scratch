@@ -2,7 +2,7 @@ import React from "react";
 import { href, useLocation, useMatches, useParams } from "react-router";
 import { type Language, asLanguage } from "~/locales/config";
 
-export const LANG_PARAM_SEGMENT = "/:lang";
+export const LANG_PARAM_SEGMENT = "/:lang?";
 
 export function localizedPathPattern(pathname?: string, lang?: Language | string): RoutePath {
   return (
